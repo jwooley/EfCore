@@ -1,10 +1,6 @@
 C:\Projects\Recipe.Core\ConsoleApplication2\bin\Debug\ConsoleApplication2.exe.config
 C:\Projects\Recipe.Core\ConsoleApplication2\bin\Debug\ConsoleApplication2.exe
 C:\Projects\Recipe.Core\ConsoleApplication2\bin\Debug\ConsoleApplication2.pdb
-C:\Projects\Recipe.Core\ConsoleApplication2\bin\Debug\EntityFramework.dll
-C:\Projects\Recipe.Core\ConsoleApplication2\bin\Debug\EntityFramework.SqlServer.dll
-C:\Projects\Recipe.Core\ConsoleApplication2\bin\Debug\EntityFramework.xml
-C:\Projects\Recipe.Core\ConsoleApplication2\bin\Debug\EntityFramework.SqlServer.xml
 C:\Projects\Recipe.Core\ConsoleApplication2\obj\Debug\Diagrams.csprojResolveAssemblyReference.cache
 C:\Projects\Recipe.Core\ConsoleApplication2\obj\Debug\ConsoleApplication2.exe
 C:\Projects\Recipe.Core\ConsoleApplication2\obj\Debug\ConsoleApplication2.pdb

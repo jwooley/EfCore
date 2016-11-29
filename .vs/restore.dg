@@ -1,2 +1,7 @@
+#:C:\Projects\Recipe.Core\Recipe.Dal\Recipe.Dal.xproj
+#:C:\Projects\Recipe.Core\WebApplication1\WebApplication1.xproj
+C:\Projects\Recipe.Core\WebApplication1\WebApplication1.xproj|C:\Projects\Recipe.Core\Recipe.Dal\Recipe.Dal.xproj
 #:C:\Projects\Recipe.Core\Recipe.test\Recipe.Test.xproj
 C:\Projects\Recipe.Core\Recipe.test\Recipe.Test.xproj|C:\Projects\Recipe.Core\Recipe.Dal\Recipe.Dal.xproj
+#:C:\Projects\Recipe.Core\MigrationsConsole\MigrationsConsole.xproj
+C:\Projects\Recipe.Core\MigrationsConsole\MigrationsConsole.xproj|C:\Projects\Recipe.Core\Recipe.Dal\Recipe.Dal.xproj

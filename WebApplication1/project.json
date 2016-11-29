@@ -20,8 +20,8 @@
     "Microsoft.Extensions.Logging.Debug": "1.0.0",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0",
-    "Microsoft.EntityFrameworkCore": "1.0.0",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.0",
+    "Microsoft.EntityFrameworkCore": "1.1.0-preview1-final",
+    "Microsoft.EntityFrameworkCore.SqlServer":"1.1.0-preview1-final",
     "Recipe.Dal": "1.0.0-*"
   },
 
