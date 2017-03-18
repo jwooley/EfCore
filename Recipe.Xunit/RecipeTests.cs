@@ -1,55 +1,58 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Recipe.Dal.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
+//using Xunit;
+//using Xunit.Abstractions;
 
 namespace Recipe.Xunit
 {
+    [TestClass]
     public class RecipeTests
     {
-        private readonly ITestOutputHelper output;
+        //private readonly ITestOutputHelper output;
         private RecipeContext dc = RecipeContext.RecipeContextFactory();
 
-        public RecipeTests(ITestOutputHelper output)
-        {
-            this.output = output;
-        }
+        //public RecipeTests(ITestOutputHelper output)
+        //{
+        //    this.output = output;
+        //}
 
-        [Fact]
+        [TestMethod]
         public void Recipe_Load()
         {
             var items = dc.Recipes.Take(5);
-            Assert.True(items.Any());
+            Assert.IsTrue(items.Any());
             foreach (var recipe in items)
             {
-                output.WriteLine(recipe.Title);
+                Trace.WriteLine(recipe.Title);
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType} - {ingredient.Description}");
+                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType} - {ingredient.Description}");
                 }
-                output.WriteLine("-----");
+                Trace.WriteLine("-----");
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void Category_Create()
         {
             var newCategory = new Category { Description = $"Test {DateTime.Now.Ticks}" };
             dc.Categories.Add(newCategory);
             dc.SaveChanges();
-            Assert.True(newCategory.Id > 0);
+            Assert.IsTrue(newCategory.Id > 0);
 
             // Cleanup
             dc.Categories.Remove(newCategory);
             dc.SaveChanges();
         }
 
-        [Fact]
+        [TestMethod]
         public async Task Recipe_CanCreateBatch()
         {
             var recipe = new Recipe.Dal.Models.Recipe
@@ -65,7 +68,7 @@ namespace Recipe.Xunit
                 recipe.Directions.Add(new Direction { Description = $"Step {i} - Stir", LineNumber = i });
             }
             await dc.SaveChangesAsync();
-            Assert.True(recipe.Id > 0);
+            Assert.IsTrue(recipe.Id > 0);
 
             // Cleanup
             dc.Ingredients.RemoveRange(recipe.Ingredients);
@@ -73,22 +76,22 @@ namespace Recipe.Xunit
             dc.Recipes.Remove(recipe);
             await dc.SaveChangesAsync();
         }
-        [Fact]
+        [TestMethod]
         public async Task StoredProcs()
         {
             var brownies = await dc.SearchRecipeAsync("Brownie");
-            Assert.NotEqual(0, brownies.Count());
+            Assert.AreNotEqual(0, brownies.Count());
         }
-        [Fact]
+        [TestMethod]
         public async Task StoredProcs_CanExtend()
         {
             // Note, this version lies because stored procs aren't extendable
             // so the additional query portions are done client side.
             var brownies = await dc.SearchRecipeOrderedAsync("Brownie");
-            Assert.True(brownies.Any());
+            Assert.IsTrue(brownies.Any());
         }
 
-        [Fact]
+        [TestMethod]
         public void Recipe_EagerLoading()
         {
             var brownies = from r in dc.Recipes
@@ -100,22 +103,22 @@ namespace Recipe.Xunit
 
             foreach (var recipe in brownies.Take(5).ToList())
             {
-                output.WriteLine(recipe.Title);
-                output.WriteLine($"    Category: " + recipe.RecipeCategories.FirstOrDefault()?.Category?.Description);
+                Trace.WriteLine(recipe.Title);
+                Trace.WriteLine($"    Category: " + recipe.RecipeCategories.FirstOrDefault()?.Category?.Description);
 
                 foreach (var ingredient in recipe.Ingredients.OrderBy(i => i.SortOrder))
                 {
-                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions.OrderBy(d => d.LineNumber))
                 {
-                    output.WriteLine(directionLine.Description);
+                    Trace.WriteLine(directionLine.Description);
                 }
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void Recipe_Projections()
         {
             var brownies = from r in dc.Recipes
@@ -130,25 +133,25 @@ namespace Recipe.Xunit
 
             foreach (var recipe in brownies.Take(5).ToList())
             {
-                output.WriteLine(recipe.Title);
+                Trace.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
                 {
-                    output.WriteLine($"    Category: " + category);
+                    Trace.WriteLine($"    Category: " + category);
                 }
 
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions)
                 {
-                    output.WriteLine(directionLine);
+                    Trace.WriteLine(directionLine);
                 }
             }
         }
 
-        [Fact]
+        [TestMethod]
         public void Recipe_WithoutNavigationProperties()
         {
             var brownies = from r in dc.Recipes
@@ -163,20 +166,20 @@ namespace Recipe.Xunit
 
             foreach (var recipe in brownies.Take(5).ToList())
             {
-                output.WriteLine(recipe.Title);
+                Trace.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
                 {
-                    output.WriteLine($"    Category: " + category);
+                    Trace.WriteLine($"    Category: " + category);
                 }
 
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions)
                 {
-                    output.WriteLine(directionLine);
+                    Trace.WriteLine(directionLine);
                 }
             }
         }
