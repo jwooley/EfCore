@@ -10,7 +10,11 @@ namespace Recipe.Dal.Models
         {
             #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
             optionsBuilder.UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;",
-                options => options.MaxBatchSize(10));
+                options =>
+                {
+                    options.EnableRetryOnFailure(maxRetryCount: 3);
+                    options.MaxBatchSize(10);
+                });
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
