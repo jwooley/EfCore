@@ -148,7 +148,7 @@ namespace Recipe.Xunit
             }
         }
 
-        [Fact]
+        //[Fact]
         public void Recipe_EagerProjections()
         {
             var brownies = from r in dc.Recipes
