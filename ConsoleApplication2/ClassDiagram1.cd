@@ -49,8 +49,8 @@
       <FileName>C:\Projects\Recipe.Core\Recipe.Dal\Models\RecipeCategory.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Property Name="Category" />
       <Property Name="Recipe" />
+      <Property Name="Category" />
     </ShowAsAssociation>
   </Class>
   <Font Name="Segoe UI" Size="9" />
