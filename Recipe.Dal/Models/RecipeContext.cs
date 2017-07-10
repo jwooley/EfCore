@@ -47,7 +47,7 @@ namespace Recipe.Dal.Models
 
                 //entity.Property(e => e.Id).ValueGeneratedNever();
             });
-            modelBuilder.Entity<Recipe>().HasQueryFilter(r => !r.IsDeleted);
+            //modelBuilder.Entity<Recipe>().HasQueryFilter(r => !r.IsDeleted);
 
             modelBuilder.Entity<RecipeCategory>(entity =>
             {
