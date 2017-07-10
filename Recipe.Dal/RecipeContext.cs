@@ -30,10 +30,10 @@ namespace Recipe.Dal.Models
             var context = new RecipeContext();
 
             // Configure logging
-            var provider = context.GetInfrastructure<IServiceProvider>();
-            var loggerFactory = provider.GetService<ILoggerFactory>();
-            loggerFactory.AddProvider(new RecipeLoggingProvider());
-
+            //var provider = context.GetInfrastructure<IServiceProvider>();
+            //var loggerFactory = provider.GetService<ILoggerFactory>();
+            //loggerFactory.AddProvider(new RecipeLoggingProvider());
+            
             return context;
         }
 

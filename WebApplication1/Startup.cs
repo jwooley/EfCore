@@ -32,9 +32,13 @@ namespace WebApplication1
         {
             // Add framework services.
             services.AddMvc();
-            
-            services.AddDbContext<RecipeContext>(options =>
-                options.UseSqlServer("data source=.;initial catalog=recipecore;integrated security=true;"));
+
+            const string ConnectionString = "data source=.;initial catalog=recipecore;integrated security=true;";
+            services.AddDbContextPool<RecipeContext>(options =>
+                options.UseSqlServer(ConnectionString)
+            );
+            //services.AddDbContext<RecipeContext>(options =>
+            //    options.UseSqlServer(ConnectionString));
         }
     
 

@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.26621.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recipe.Dal", "Recipe.Dal\Recipe.Dal.csproj", "{3425FC62-3E2E-49E4-B273-73F75B98C072}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigrationsConsole", "MigrationsConsole\MigrationsConsole.csproj", "{F5F859C0-ED6E-4D9A-88D7-37B00384E8EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MigrationsConsole", "MigrationsConsole\MigrationsConsole.csproj", "{F5F859C0-ED6E-4D9A-88D7-37B00384E8EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{21650AE6-4859-4E34-BB98-22224947D5CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{21650AE6-4859-4E34-BB98-22224947D5CE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Diagrams", "ConsoleApplication2\Diagrams.csproj", "{A87B23FE-350F-47DA-8E63-F7705EF0752F}"
 EndProject
@@ -85,5 +85,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E40B03CF-58CA-4571-B239-923D447F851B}
 	EndGlobalSection
 EndGlobal
