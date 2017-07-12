@@ -23,11 +23,18 @@ namespace Recipe.Xunit
         [Fact]
         public void Recipe_Load()
         {
-            var items = dc.Recipes.Take(5);
+            var items = dc.Recipes.Include(r =>r.Directions)
+                .Take(5)
+                .ToList();
             Assert.True(items.Any());
             foreach (var recipe in items)
             {
                 output.WriteLine(recipe.Title);
+                foreach(var d in recipe.Directions)
+                {
+                    output.WriteLine(d.Description);
+                }
+                output.WriteLine(" ----- ");
             }
         }
 
