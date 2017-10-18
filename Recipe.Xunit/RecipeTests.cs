@@ -83,29 +83,29 @@ namespace Recipe.Xunit
         [TestMethod]
         public async Task StoredProcs()
         {
-            var brownies = await dc.SearchRecipeAsync("Brownie");
-            Assert.AreNotEqual(0, brownies.Count());
+            var salmon = await dc.SearchRecipeAsync("salmon");
+            Assert.AreNotEqual(0, salmon.Count());
         }
         [TestMethod]
         public async Task StoredProcs_CanExtend()
         {
             // Note, this version lies because stored procs aren't extendable
             // so the additional query portions are done client side.
-            var brownies = await dc.SearchRecipeOrderedAsync("Brownie");
-            Assert.IsTrue(brownies.Any());
+            var salmon = await dc.SearchRecipeOrderedAsync("salmon");
+            Assert.IsTrue(salmon.Any());
         }
 
         [TestMethod]
         public void Recipe_EagerLoading()
         {
-            var brownies = from r in dc.Recipes
+            var salmon = from r in dc.Recipes
                                 .Include(rec => rec.RecipeCategories).ThenInclude(rc => rc.Category)
                                 .Include(rec => rec.Ingredients)
                                 .Include(rec => rec.Directions)
-                           where r.Title.Contains("brownie")
+                           where r.Title.Contains("salmon")
                            select r;
 
-            foreach (var recipe in brownies.Take(5).ToList())
+            foreach (var recipe in salmon.Take(5).ToList())
             {
                 Console.WriteLine(recipe.Title);
                 Console.WriteLine($"    Category: " + recipe.RecipeCategories.FirstOrDefault()?.Category?.Description);
@@ -125,8 +125,8 @@ namespace Recipe.Xunit
         [TestMethod]
         public void Recipe_Projections()
         {
-            var brownies = from r in dc.Recipes
-                           where r.Title.Contains("Brownie")
+            var salmon = from r in dc.Recipes
+                           where r.Title.Contains("salmon")
                            select new
                            {
                                r.Title,
@@ -135,7 +135,7 @@ namespace Recipe.Xunit
                                Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description)
                            };
 
-            foreach (var recipe in brownies.Take(5).ToList())
+            foreach (var recipe in salmon.Take(5).ToList())
             {
                 Console.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
@@ -158,11 +158,11 @@ namespace Recipe.Xunit
         //[TestMethod]
         public void Recipe_EagerProjections()
         {
-            var brownies = from r in dc.Recipes
+            var salmon = from r in dc.Recipes
                                 .Include(rec => rec.RecipeCategories).ThenInclude(rc => rc.Category)
                                 .Include(rec => rec.Ingredients)
                                 .Include(rec => rec.Directions)
-                           where r.Title.Contains("Brownie")
+                           where r.Title.Contains("salmon")
                            select new
                            {
                                r.Title,
@@ -171,7 +171,7 @@ namespace Recipe.Xunit
                                Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description)
                            };
 
-            foreach (var recipe in brownies.Take(5).ToList())
+            foreach (var recipe in salmon.Take(5).ToList())
             {
                 Console.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
@@ -194,8 +194,8 @@ namespace Recipe.Xunit
         //[TestMethod]
         public void Recipe_WithoutNavigationProperties()
         {
-            var brownies = from r in dc.Recipes
-                           where r.Title.Contains("Brownie")
+            var salmon = from r in dc.Recipes
+                           where r.Title.Contains("salmon")
                            select new
                            {
                                r.Title,
@@ -204,7 +204,7 @@ namespace Recipe.Xunit
                                Directions = dc.Directions.Where(d => d.RecipeId == r.Id).OrderBy(d => d.LineNumber).Select(d => d.Description)
                            };
 
-            foreach (var recipe in brownies.Take(5).ToList())
+            foreach (var recipe in salmon.Take(5).ToList())
             {
                 Console.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
