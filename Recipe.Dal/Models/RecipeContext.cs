@@ -1,20 +1,30 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace Recipe.Dal.Models
 {
     public partial class RecipeContext : DbContext
     {
+        public static readonly LoggerFactory ConsoleLoggerFactory 
+            = new LoggerFactory(new[] 
+            {
+                new ConsoleLoggerProvider((category, level) => 
+                    category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information,
+                    true)
+            });
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
             optionsBuilder.UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
-                    options.MaxBatchSize(10);
-                });
+                    options.MaxBatchSize(100);
+                })
+                .UseLoggerFactory(ConsoleLoggerFactory);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
