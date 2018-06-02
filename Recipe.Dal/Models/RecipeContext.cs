@@ -24,7 +24,8 @@ namespace Recipe.Dal.Models
                     options.EnableRetryOnFailure(maxRetryCount: 3);
                     options.MaxBatchSize(100);
                 })
-                .UseLoggerFactory(ConsoleLoggerFactory);
+                .UseLoggerFactory(ConsoleLoggerFactory)
+                .UseLazyLoadingProxies();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,7 +41,6 @@ namespace Recipe.Dal.Models
                 entity.HasIndex(e => new { e.LineNumber, e.Description, e.RecipeId, e.Id })
                     .HasName("_dta_index_Directions_5_709577566__K4_K1_2_3");
             });
-
             modelBuilder.Entity<Ingredient>(entity =>
             {
                 entity.HasIndex(e => e.RecipeId)
