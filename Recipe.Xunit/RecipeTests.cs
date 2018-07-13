@@ -144,6 +144,33 @@ namespace Recipe.Xunit
         }
 
         [TestMethod]
+        public void Recipe_LazyLoad()
+        {
+            var salmon = dc.Recipes
+                .Where(r => r.Title.Contains("salmon"))
+                .Take(5);
+
+            foreach (var recipe in salmon.ToList())
+            {
+                Trace.WriteLine(recipe.Title);
+                foreach (var category in recipe.RecipeCategories)
+                {
+                    Trace.WriteLine($"    Category: " + category.Category.Description);
+                }
+
+                foreach (var ingredient in recipe.Ingredients)
+                {
+                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                }
+
+                foreach (var directionLine in recipe.Directions)
+                {
+                    Trace.WriteLine(directionLine);
+                }
+            }
+        }
+
+        [TestMethod]
         public void Recipe_WithoutNavigationProperties()
         {
             var salmon = from r in dc.Recipes
