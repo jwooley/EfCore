@@ -13,13 +13,7 @@ namespace Recipe.Xunit
     [TestClass]
     public class RecipeTests
     {
-        //private readonly ITestOutputHelper output;
         private RecipeContext dc = RecipeContext.RecipeContextFactory();
-
-        //public RecipeTests(ITestOutputHelper output)
-        //{
-        //    this.output = output;
-        //}
 
         [TestMethod]
         public void Recipe_Load()
