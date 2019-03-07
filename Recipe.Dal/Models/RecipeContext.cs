@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 
@@ -8,23 +9,30 @@ namespace Recipe.Dal.Models
 {
     public partial class RecipeContext : DbContext
     {
-        public static readonly LoggerFactory ConsoleLoggerFactory 
-            = new LoggerFactory(new[] 
-            {
-                new ConsoleLoggerProvider((category, level) => 
-                    category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information,
-                    true)
-            });
+        //public static readonly LoggerFactory ConsoleLoggerFactory 
+        //    = new LoggerFactory(new[] 
+        //    {
+        //        new ConsoleLoggerProvider((category, level) => 
+        //            category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information,
+        //            true)
+        //    });
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            IServiceCollection serviceCollection = new ServiceCollection();
+            serviceCollection.AddLogging(builder => builder
+                .AddConsole()
+                .AddFilter(level => level >= LogLevel.Information)
+            );
+            var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
+
             optionsBuilder.UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
-                    options.MaxBatchSize(100);
+                    options.MaxBatchSize(10);
                 })
-                .UseLoggerFactory(ConsoleLoggerFactory)
+                .UseLoggerFactory(loggerFactory)
                 .UseLazyLoadingProxies();
         }
 
