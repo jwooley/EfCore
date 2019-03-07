@@ -12,6 +12,30 @@ namespace Recipe.Xunit
     public class EF2Tests
     {
         [TestMethod]
+        public void Ef2_Warmup()
+        {
+            using (var dc = RecipeContext.RecipeContextFactory())
+            {
+                var rec = dc.Recipes.First();
+            }
+        }
+
+        [TestMethod]
+        public void Ef2_TagWith()
+        {
+            using (var dc = new RecipeContext())
+            {
+                var brownies = from recipe in dc.Recipes.TagWith("Testing Tag With")
+                               where EF.Functions.Like(recipe.Title, "%brownie%")
+                               select recipe.Title;
+                foreach (var recipe in brownies)
+                {
+                    Console.WriteLine(recipe);
+                }
+            }
+
+        }
+        [TestMethod]
         public void Ef2_Functions_Like()
         {
             using (var dc = new RecipeContext())
@@ -23,6 +47,18 @@ namespace Recipe.Xunit
                 {
                     Console.WriteLine(recipe);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void Ef2_View()
+        {
+            using (var dc = new RecipeContext())
+            {
+                var search = "%brownie%";
+                var brownies = dc.Set<Recipe.Dal.Models.Recipe>()
+                    .FromSql($"Select * from Recipe where Title like {search}");
+                Assert.IsTrue(brownies.Any());
             }
         }
     }

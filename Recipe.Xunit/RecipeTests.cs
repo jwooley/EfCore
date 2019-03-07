@@ -18,7 +18,7 @@ namespace Recipe.Xunit
         [TestMethod]
         public void Recipe_Load()
         {
-            var items = dc.Recipes.Take(5);
+            var items = dc.Recipes.Take(50);
             Assert.IsTrue(items.Any());
             foreach (var recipe in items)
             {
@@ -84,6 +84,39 @@ namespace Recipe.Xunit
         }
 
         [TestMethod]
+        public void Recipe_BadCodePerformsPoorly()
+        {
+            var Appetizers = from cat in dc.Categories
+                             where cat.Description == "Appetizers"
+                             select cat;
+            foreach (var category in Appetizers)
+            {
+                foreach (var recipe in category.RecipeCategories.Select(rc => rc.Recipe).Take(50))
+                {
+                    Trace.WriteLine(recipe.Title);
+                    if (recipe.RecipeCategories.Any())
+                    {
+                        Trace.Write($"    Category: " + recipe.RecipeCategories.First().Category.Description);
+                    }
+                    if (recipe.Ingredients.Any())
+                    {
+                        foreach (var ingredient in recipe.Ingredients.OrderBy(i => i.SortOrder))
+                        {
+                            Trace.Write(dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).Units);
+                            Trace.Write($" {dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).UnitType} ");
+                            Trace.WriteLine(dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).Description);
+                        }
+                    }
+                    foreach (var directionLine in recipe.Directions.OrderBy(d => d.LineNumber))
+                    {
+                        Trace.WriteLine(directionLine.Description);
+                    }
+                }
+            }
+        }
+
+
+        [TestMethod]
         public void Recipe_EagerLoading()
         {
             var salmon = from r in dc.Recipes
@@ -93,7 +126,7 @@ namespace Recipe.Xunit
                            where r.Title.Contains("salmon")
                            select r;
 
-            foreach (var recipe in salmon.Take(5).ToList())
+            foreach (var recipe in salmon.Take(50).ToList())
             {
                 Trace.WriteLine(recipe.Title);
                 Trace.WriteLine($"    Category: " + recipe.RecipeCategories.FirstOrDefault()?.Category?.Description);
@@ -118,12 +151,12 @@ namespace Recipe.Xunit
                            select new
                            {
                                r.Title,
-                               Categories = r.RecipeCategories.Select(rc => rc.Category.Description),
-                               Ingredients = r.Ingredients.OrderBy(i => i.SortOrder),
-                               Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description)
+                               Categories = r.RecipeCategories.Select(rc => rc.Category.Description).ToList(),
+                               Ingredients = r.Ingredients.OrderBy(i => i.SortOrder).ToList(),
+                               Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
                            };
 
-            foreach (var recipe in salmon.Take(5).ToList())
+            foreach (var recipe in salmon.Take(50).ToList())
             {
                 Trace.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
@@ -160,7 +193,7 @@ namespace Recipe.Xunit
                              Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
                          };
 
-            foreach (var recipe in salmon.Take(5).ToList())
+            foreach (var recipe in salmon.Take(50).ToList())
             {
                 Trace.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
@@ -185,7 +218,7 @@ namespace Recipe.Xunit
         {
             var salmon = dc.Recipes
                 .Where(r => r.Title.Contains("salmon"))
-                .Take(5);
+                .Take(50);
 
             foreach (var recipe in salmon.ToList())
             {
@@ -220,7 +253,7 @@ namespace Recipe.Xunit
                                Directions = dc.Directions.Where(d => d.RecipeId == r.Id).OrderBy(d => d.LineNumber).Select(d => d.Description)
                            };
 
-            foreach (var recipe in salmon.Take(5).ToList())
+            foreach (var recipe in salmon.Take(50).ToList())
             {
                 Trace.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
@@ -239,6 +272,24 @@ namespace Recipe.Xunit
                 }
             }
         }
+        [TestMethod]
+        public void FirstSingle()
+        {
+            var recipeId = dc.Recipes.First().Id;
 
+            var recipe1 = dc.Recipes.First(r => r.Id == recipeId);
+            var recipe2 = dc.Recipes.FirstOrDefault(r => r.Id == recipeId);
+            var recipe3 = dc.Recipes.Single(r => r.Id == recipeId);
+            var recipe4 = dc.Recipes.SingleOrDefault(r => r.Id == recipeId);
+
+            var recipe5 = dc.Recipes.Where(r => r.Id == recipeId).First();
+
+            Trace.WriteLine("Fetch from cache");
+            var recipeCached = dc.Recipes.Find(recipeId);
+            Assert.IsNotNull(recipeCached);
+            Trace.WriteLine("Fetch from Local");
+            var cachedAgain = dc.Recipes.Local.FirstOrDefault(r => r.Id == recipeId);
+            Assert.IsNotNull(cachedAgain);
+        }
     }
 }
