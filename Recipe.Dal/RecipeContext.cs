@@ -45,13 +45,13 @@ namespace Recipe.Dal.Models
 
         public async Task<IEnumerable<Recipe>> SearchRecipeAsync(string searchString)
         {
-            return await Set<Recipe>().FromSql($"sRecipeSearch @searchText={searchString}").ToListAsync();
+            return await Set<Recipe>().FromSqlRaw($"sRecipeSearch @searchText={searchString}").ToListAsync();
         }
 
         public async Task<IEnumerable<Recipe>> SearchRecipeOrderedAsync(string searchString)
         {
             return await Set<Recipe>()
-                .FromSql("sRecipeSearch @searchText={0}", searchString)
+                .FromSqlRaw("sRecipeSearch @searchText='{0}'", searchString)
                 .OrderBy(r => r.Title)
                 .ToListAsync();
         }

@@ -55,9 +55,9 @@ namespace Recipe.Xunit
         {
             using (var dc = new RecipeContext())
             {
-                var search = "%brownie%";
+                var search = "'%brownie%'";
                 var brownies = dc.Set<Recipe.Dal.Models.Recipe>()
-                    .FromSql($"Select * from Recipe where Title like {search}");
+                    .FromSqlRaw($"Select * from Recipe where Title like {search}");
                 Assert.IsTrue(brownies.Any());
             }
         }

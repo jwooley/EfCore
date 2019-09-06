@@ -9,29 +9,17 @@ namespace Recipe.Dal
 {
     public class RecipeLoggingProvider : ILoggerProvider
     {
-        public ILogger CreateLogger(string categoryName)
-        {
-            return new RecipeLogger();
-        }
+        public ILogger CreateLogger(string categoryName) => new RecipeLogger();
 
         public void Dispose() { }
 
         private class RecipeLogger : ILogger
         {
-            public IDisposable BeginScope<TState>(TState state)
-            {
-                return null;
-            }
+            public IDisposable BeginScope<TState>(TState state) => null;
 
-            public bool IsEnabled(LogLevel logLevel)
-            {
-                return logLevel >= LogLevel.Error;
-            }
+            public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Error;
 
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-            {
-                Console.WriteLine(formatter(state, exception));
-            }
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) => Console.WriteLine(formatter(state, exception));
         }
     }
 }

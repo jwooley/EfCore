@@ -26,7 +26,7 @@ namespace Recipe.Dal.Models
             );
             var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-            optionsBuilder.UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;",
+            optionsBuilder.UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;multipleactiveresultsets=True;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
