@@ -17,13 +17,14 @@ namespace Recipe.Dal.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
              optionsBuilder
-                .UseLoggerFactory(ContextLoggerFactory)
                 .UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;multipleactiveresultsets=True;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
                     options.MaxBatchSize(10);
                 })
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(ContextLoggerFactory)
                 .UseLazyLoadingProxies();
         }
 
