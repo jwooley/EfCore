@@ -11,7 +11,7 @@ namespace Recipe.Dal.Models
     {
         public static readonly ILoggerFactory ContextLoggerFactory = LoggerFactory.Create(builder =>
         {
-            builder.AddDebug();
+            builder.AddConsole();
         });
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
