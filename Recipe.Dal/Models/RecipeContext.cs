@@ -9,30 +9,18 @@ namespace Recipe.Dal.Models
 {
     public partial class RecipeContext : DbContext
     {
-        //public static readonly LoggerFactory ConsoleLoggerFactory 
-        //    = new LoggerFactory(new[] 
-        //    {
-        //        new ConsoleLoggerProvider((category, level) => 
-        //            category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information,
-        //            true)
-        //    });
+        public static readonly ILoggerFactory ContextLoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            IServiceCollection serviceCollection = new ServiceCollection();
-            serviceCollection.AddLogging(builder => builder
-                .AddConsole()
-                .AddFilter(level => level >= LogLevel.Information)
-            );
-            var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
-
-            optionsBuilder.UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;multipleactiveresultsets=True;",
+             optionsBuilder
+                .UseLoggerFactory(ContextLoggerFactory)
+                .UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;multipleactiveresultsets=True;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
                     options.MaxBatchSize(10);
                 })
-                .UseLoggerFactory(loggerFactory)
                 .UseLazyLoadingProxies();
         }
 
@@ -62,7 +50,7 @@ namespace Recipe.Dal.Models
             {
                 entity.HasIndex(e => e.Title)
                     .HasName("IX_Recipes_Title");
-
+                //entity.Property(e => e.Title).IsUnicode(false);
                 //entity.Property(e => e.Id).ValueGeneratedNever();
             });
             //modelBuilder.Entity<Recipe>().HasQueryFilter(r => !r.IsDeleted);

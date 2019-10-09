@@ -20,9 +20,10 @@ namespace Recipe.Dal.Models
     /// </summary>
     public partial class RecipeContext 
     {
+        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
         public RecipeContext()
         {
-            
         }
 
         public static RecipeContext RecipeContextFactory()
@@ -30,9 +31,10 @@ namespace Recipe.Dal.Models
             var context = new RecipeContext();
 
             // Configure logging
-            var provider = context.GetInfrastructure<IServiceProvider>();
-            var loggerFactory = provider.GetService<ILoggerFactory>();
-            loggerFactory.AddProvider(new RecipeLoggingProvider());
+            // Changed in 3.0
+            //var provider = context.GetInfrastructure<IServiceProvider>();
+            //var loggerFactory = provider.GetService<ILoggerFactory>();
+            //loggerFactory.AddProvider(new RecipeLoggingProvider());
 
             return context;
         }
@@ -48,12 +50,12 @@ namespace Recipe.Dal.Models
             return await Set<Recipe>().FromSqlRaw($"sRecipeSearch @searchText={searchString}").ToListAsync();
         }
 
-        public async Task<IEnumerable<Recipe>> SearchRecipeOrderedAsync(string searchString)
+        public IEnumerable<Recipe> SearchRecipeOrderedAsync(string searchString)
         {
-            return await Set<Recipe>()
-                .FromSqlRaw("sRecipeSearch @searchText='{0}'", searchString)
-                .OrderBy(r => r.Title)
-                .ToListAsync();
+            return Set<Recipe>()
+                .FromSqlInterpolated($"sRecipeSearch @searchText={searchString}")
+                .AsEnumerable()
+                .OrderBy(r => r.Title);
         }
     }
 }
