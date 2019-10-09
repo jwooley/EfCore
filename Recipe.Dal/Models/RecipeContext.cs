@@ -9,7 +9,10 @@ namespace Recipe.Dal.Models
 {
     public partial class RecipeContext : DbContext
     {
-        public static readonly ILoggerFactory ContextLoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        public static readonly ILoggerFactory ContextLoggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddDebug();
+        });
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -20,7 +20,7 @@ namespace Recipe.Dal.Models
     /// </summary>
     public partial class RecipeContext 
     {
-        public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        //public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
         public RecipeContext()
         {
