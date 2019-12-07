@@ -152,8 +152,8 @@ namespace Recipe.Xunit
                            {
                                r.Title,
                                Categories = r.RecipeCategories.Select(rc => rc.Category.Description).ToList(),
-                               Ingredients = r.Ingredients.OrderBy(i => i.SortOrder),
-                               Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description)
+                               Ingredients = r.Ingredients.OrderBy(i => i.SortOrder).ToList(),
+                               Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
                            };
 
             foreach (var recipe in salmon.Take(50).ToList())
