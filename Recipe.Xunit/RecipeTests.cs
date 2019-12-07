@@ -13,7 +13,7 @@ namespace Recipe.Xunit
     [TestClass]
     public class RecipeTests
     {
-        private RecipeContext dc = RecipeContext.RecipeContextFactory();
+        private readonly RecipeContext dc = RecipeContext.RecipeContextFactory();
 
         [TestMethod]
         public void Recipe_Load()
@@ -75,11 +75,11 @@ namespace Recipe.Xunit
             Assert.AreNotEqual(0, salmon.Count());
         }
         [TestMethod]
-        public async Task StoredProcs_CanExtend()
+        public void StoredProcs_CanExtend()
         {
             // Note, this version lies because stored procs aren't extendable
             // so the additional query portions are done client side.
-            var salmon = await dc.SearchRecipeOrderedAsync("salmon");
+            var salmon = dc.SearchRecipeOrderedAsync("salmon");
             Assert.IsTrue(salmon.Any());
         }
 
@@ -248,12 +248,12 @@ namespace Recipe.Xunit
                            select new
                            {
                                r.Title,
-                               Categories = dc.RecipeCategory.Where(rc => rc.RecipeId == r.Id).Select(rc => rc.Category.Description),
-                               Ingredients = dc.Ingredients.Where(i => i.RecipeId == r.Id).OrderBy(i => i.SortOrder),
-                               Directions = dc.Directions.Where(d => d.RecipeId == r.Id).OrderBy(d => d.LineNumber).Select(d => d.Description)
+                               Categories = dc.RecipeCategory.Where(rc => rc.RecipeId == r.Id).Select(rc => rc.Category.Description).ToList(),
+                               Ingredients = dc.Ingredients.Where(i => i.RecipeId == r.Id).OrderBy(i => i.SortOrder).ToList(),
+                               Directions = dc.Directions.Where(d => d.RecipeId == r.Id).OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
                            };
 
-            foreach (var recipe in salmon.Take(50).ToList())
+            foreach (var recipe in salmon.ToList())
             {
                 Trace.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
