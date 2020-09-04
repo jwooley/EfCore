@@ -17,7 +17,7 @@ namespace Recipe.Dal.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
              optionsBuilder
-                .UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;multipleactiveresultsets=True;",
+                .UseSqlServer(@"data source=.,1401;initial catalog=recipecore;User Id=sa;Password=SuperSecretP@ssw0rd;multipleactiveresultsets=True;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
@@ -33,29 +33,27 @@ namespace Recipe.Dal.Models
             modelBuilder.Entity<Direction>(entity =>
             {
                 entity.HasIndex(e => e.RecipeId)
-                    .HasName("IX_Recipe_RecipeId");
+                    .HasDatabaseName("IX_Recipe_RecipeId");
 
                 entity.HasIndex(e => new { e.RecipeId, e.LineNumber })
-                    .HasName("IX_Directions_RecipeLineNumber");
+                    .HasDatabaseName("IX_Directions_RecipeLineNumber");
 
                 entity.HasIndex(e => new { e.LineNumber, e.Description, e.RecipeId, e.Id })
-                    .HasName("_dta_index_Directions_5_709577566__K4_K1_2_3");
+                    .HasDatabaseName("_dta_index_Directions_5_709577566__K4_K1_2_3");
             });
             modelBuilder.Entity<Ingredient>(entity =>
             {
                 entity.HasIndex(e => e.RecipeId)
-                    .HasName("IX_Recipe_RecipeId");
+                    .HasDatabaseName("IX_Recipe_RecipeId");
 
                 entity.HasIndex(e => new { e.SortOrder, e.Units, e.UnitType, e.Description, e.RecipeId, e.Id })
-                    .HasName("_dta_index_Ingredients_5_661577395__K6_K1_2_3_4_5");
+                    .HasDatabaseName("_dta_index_Ingredients_5_661577395__K6_K1_2_3_4_5");
             });
 
             modelBuilder.Entity<Recipe>(entity =>
             {
                 entity.HasIndex(e => e.Title)
-                    .HasName("IX_Recipes_Title");
-                //entity.Property(e => e.Title).IsUnicode(false);
-                //entity.Property(e => e.Id).ValueGeneratedNever();
+                    .HasDatabaseName("IX_Recipes_Title");
             });
             //modelBuilder.Entity<Recipe>().HasQueryFilter(r => !r.IsDeleted);
 
@@ -65,10 +63,10 @@ namespace Recipe.Dal.Models
                     .HasName("PK_dbo.RecipeCategories");
 
                 entity.HasIndex(e => e.CategoryId)
-                    .HasName("IX_Category_CategoryId");
+                    .HasDatabaseName("IX_Category_CategoryId");
 
                 entity.HasIndex(e => e.RecipeId)
-                    .HasName("IX_Recipe_RecipeId");
+                    .HasDatabaseName("IX_Recipe_RecipeId");
             });
         }
 

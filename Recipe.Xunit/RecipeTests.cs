@@ -94,11 +94,11 @@ namespace Recipe.Xunit
                 foreach (var recipe in category.RecipeCategories.Select(rc => rc.Recipe).Take(50))
                 {
                     Trace.WriteLine(recipe.Title);
-                    if (recipe.RecipeCategories.Any())
+                    if (recipe.RecipeCategories.Count > 0)
                     {
                         Trace.Write($"    Category: " + recipe.RecipeCategories.First().Category.Description);
                     }
-                    if (recipe.Ingredients.Any())
+                    if (recipe.Ingredients.Count > 0)
                     {
                         foreach (var ingredient in recipe.Ingredients.OrderBy(i => i.SortOrder))
                         {
