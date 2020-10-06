@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,14 +18,22 @@ namespace Recipe.Dal.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
              optionsBuilder
+                // See https://erikej.github.io/efcore/2020/05/18/ef-core-simple-logging.html for details on LogTo
+                .LogTo(Console.WriteLine,
+                    new[]
+                    {
+                        DbLoggerCategory.Database.Command.Name
+                    },
+                    LogLevel.Information,
+                    DbContextLoggerOptions.SingleLine | DbContextLoggerOptions.UtcTime)
                 .UseSqlServer(@"data source=.,1401;initial catalog=recipecore;User Id=sa;Password=SuperSecretP@ssw0rd;multipleactiveresultsets=True;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
                     options.MaxBatchSize(10);
                 })
-                .EnableSensitiveDataLogging()
-                .UseLoggerFactory(ContextLoggerFactory)
+                //.EnableSensitiveDataLogging()
+                //.UseLoggerFactory(ContextLoggerFactory)
                 .UseLazyLoadingProxies();
         }
 

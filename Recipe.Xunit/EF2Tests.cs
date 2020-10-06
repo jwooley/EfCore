@@ -1,25 +1,33 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Recipe.Dal.Models;
+﻿using Recipe.Dal.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Recipe.Xunit
 {
-    [TestClass]
     public class EF2Tests
     {
+        private readonly ITestOutputHelper output;
 
-        [TestMethod]
+        public EF2Tests(ITestOutputHelper output)
+        {
+            this.output = output;
+            var converter = new XUnitConsoleLogConverter(output);
+            Console.SetOut(converter);
+        }
+
+        [Fact]
         public void Ef2_Warmup()
         {
             using var dc = RecipeContext.RecipeContextFactory();
             var rec = dc.Recipes.First();
         }
 
-        [TestMethod]
+        [Fact]
         public void Ef2_TagWith()
         {
             using var dc = new RecipeContext();
@@ -28,11 +36,11 @@ namespace Recipe.Xunit
                            select recipe.Title;
             foreach (var recipe in brownies)
             {
-                Console.WriteLine(recipe);
+                output.WriteLine(recipe);
             }
 
         }
-        [TestMethod]
+        [Fact]
         public void Ef2_Functions_Like()
         {
             using var dc = new RecipeContext();
@@ -43,26 +51,26 @@ namespace Recipe.Xunit
                            select recipe.Title;
             foreach (var recipe in brownies)
             {
-                Console.WriteLine(recipe);
+                output.WriteLine(recipe);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Ef2_View()
         {
             using var dc = new RecipeContext();
             var search = "%brownie%";
             var brownies = dc.Set<Recipe.Dal.Models.Recipe>()
                .FromSqlInterpolated($"Select * from Recipe where Title like {search}");
-            Assert.IsTrue(brownies.Any());
+            Assert.True(brownies.Any());
         }
-        [TestMethod]
+        [Fact]
         public void EfVarcharTest()
         {
             using var dc = new RecipeContext();
             var query = dc.Recipes.Where(r => r.Title.Contains("brownie"));
             var brownie = query.FirstOrDefault();
-            Assert.IsNotNull(brownie);
+            Assert.NotNull(brownie);
         }
     }
 }

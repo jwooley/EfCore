@@ -1,8 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,7 +16,6 @@ namespace Recipe.Dal.Models
     /// </summary>
     public partial class RecipeContext 
     {
-        //public static readonly ILoggerFactory MyLoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
         public RecipeContext()
         {
@@ -29,13 +24,6 @@ namespace Recipe.Dal.Models
         public static RecipeContext RecipeContextFactory()
         {
             var context = new RecipeContext();
-
-            // Configure logging
-            // Changed in 3.0
-            //var provider = context.GetInfrastructure<IServiceProvider>();
-            //var loggerFactory = provider.GetService<ILoggerFactory>();
-            //loggerFactory.AddProvider(new RecipeLoggingProvider());
-
             return context;
         }
 

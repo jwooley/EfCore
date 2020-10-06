@@ -1,50 +1,56 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Recipe.Dal.Models;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-//using Xunit;
-//using Xunit.Abstractions;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Recipe.Xunit
 {
-    [TestClass]
+
     public class RecipeTests
     {
+        private readonly ITestOutputHelper output;
+        public RecipeTests(ITestOutputHelper output)
+        {
+            this.output = output;
+            var converter = new XUnitConsoleLogConverter(output);
+            Console.SetOut(converter);
+        }
         private readonly RecipeContext dc = RecipeContext.RecipeContextFactory();
 
-        [TestMethod]
+        [Fact]
         public void Recipe_Load()
         {
             var items = dc.Recipes.Take(50);
-            Assert.IsTrue(items.Any());
+            Assert.True(items.Any());
             foreach (var recipe in items)
             {
-                Trace.WriteLine(recipe.Title);
+                output.WriteLine(recipe.Title);
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType} - {ingredient.Description}");
+                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType} - {ingredient.Description}");
                 }
-                Trace.WriteLine("-----");
+                output.WriteLine("-----");
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Category_Create()
         {
             var newCategory = new Category { Description = $"Test {DateTime.Now.Ticks}" };
             dc.Categories.Add(newCategory);
             dc.SaveChanges();
-            Assert.IsTrue(newCategory.Id > 0);
+            Assert.True(newCategory.Id > 0);
 
             // Cleanup
             dc.Categories.Remove(newCategory);
             dc.SaveChanges();
         }
 
-        [TestMethod]
+        [Fact]
         public async Task Recipe_CanCreateBatch()
         {
             var recipe = new Recipe.Dal.Models.Recipe
@@ -60,7 +66,7 @@ namespace Recipe.Xunit
                 recipe.Directions.Add(new Direction { Description = $"Step {i} - Stir", LineNumber = i });
             }
             await dc.SaveChangesAsync();
-            Assert.IsTrue(recipe.Id > 0);
+            Assert.True(recipe.Id > 0);
 
             // Cleanup
             dc.Ingredients.RemoveRange(recipe.Ingredients);
@@ -68,22 +74,22 @@ namespace Recipe.Xunit
             dc.Recipes.Remove(recipe);
             await dc.SaveChangesAsync();
         }
-        [TestMethod]
+        [Fact]
         public async Task StoredProcs()
         {
             var salmon = await dc.SearchRecipeAsync("salmon");
-            Assert.AreNotEqual(0, salmon.Count());
+            Assert.NotEmpty(salmon);
         }
-        [TestMethod]
+        [Fact]
         public void StoredProcs_CanExtend()
         {
             // Note, this version lies because stored procs aren't extendable
             // so the additional query portions are done client side.
             var salmon = dc.SearchRecipeOrderedAsync("salmon");
-            Assert.IsTrue(salmon.Any());
+            Assert.True(salmon.Any());
         }
 
-        [TestMethod]
+        [Fact]
         public void Recipe_BadCodePerformsPoorly()
         {
             var Appetizers = from cat in dc.Categories
@@ -93,57 +99,57 @@ namespace Recipe.Xunit
             {
                 foreach (var recipe in category.RecipeCategories.Select(rc => rc.Recipe).Take(50))
                 {
-                    Trace.WriteLine(recipe.Title);
+                    output.WriteLine(recipe.Title);
                     if (recipe.RecipeCategories.Count > 0)
                     {
-                        Trace.Write($"    Category: " + recipe.RecipeCategories.First().Category.Description);
+                        output.WriteLine($"    Category: " + recipe.RecipeCategories.First().Category.Description);
                     }
                     if (recipe.Ingredients.Count > 0)
                     {
                         foreach (var ingredient in recipe.Ingredients.OrderBy(i => i.SortOrder))
                         {
-                            Trace.Write(dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).Units);
-                            Trace.Write($" {dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).UnitType} ");
-                            Trace.WriteLine(dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).Description);
+                            output.WriteLine(dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).Units);
+                            output.WriteLine($" {dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).UnitType} ");
+                            output.WriteLine(dc.Ingredients.SingleOrDefault(i => i.Id == ingredient.Id).Description);
                         }
                     }
                     foreach (var directionLine in recipe.Directions.OrderBy(d => d.LineNumber))
                     {
-                        Trace.WriteLine(directionLine.Description);
+                        output.WriteLine(directionLine.Description);
                     }
                 }
             }
         }
 
 
-        [TestMethod]
+        [Fact]
         public void Recipe_EagerLoading()
         {
             var salmon = from r in dc.Recipes
                                 .Include(rec => rec.RecipeCategories).ThenInclude(rc => rc.Category)
-                                .Include(rec => rec.Ingredients)
-                                .Include(rec => rec.Directions)
+                                .Include(rec => rec.Ingredients.OrderBy(i => i.SortOrder))
+                                .Include(rec => rec.Directions.OrderBy(d => d.LineNumber))
                            where r.Title.Contains("salmon")
                            select r;
 
             foreach (var recipe in salmon.Take(50).ToList())
             {
-                Trace.WriteLine(recipe.Title);
-                Trace.WriteLine($"    Category: " + recipe.RecipeCategories.FirstOrDefault()?.Category?.Description);
+                output.WriteLine(recipe.Title);
+                output.WriteLine($"    Category: " + recipe.RecipeCategories.FirstOrDefault()?.Category?.Description);
 
-                foreach (var ingredient in recipe.Ingredients.OrderBy(i => i.SortOrder))
+                foreach (var ingredient in recipe.Ingredients)
                 {
-                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions.OrderBy(d => d.LineNumber))
                 {
-                    Trace.WriteLine(directionLine.Description);
+                    output.WriteLine(directionLine.Description);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Recipe_Projections()
         {
             var salmon = from r in dc.Recipes
@@ -158,20 +164,20 @@ namespace Recipe.Xunit
 
             foreach (var recipe in salmon.Take(50).ToList())
             {
-                Trace.WriteLine(recipe.Title);
+                output.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
                 {
-                    Trace.WriteLine($"    Category: " + category);
+                    output.WriteLine($"    Category: " + category);
                 }
 
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions)
                 {
-                    Trace.WriteLine(directionLine);
+                    output.WriteLine(directionLine);
                 }
             }
         }
@@ -180,7 +186,7 @@ namespace Recipe.Xunit
         /// Using tolist for child collections reduces the queries issued and uses
         /// similar behavior to include except it doesn't do select *
         /// </summary>
-        [TestMethod]
+        [Fact]
         public void Recipe_Projections21()
         {
             var salmon = from r in dc.Recipes
@@ -195,25 +201,25 @@ namespace Recipe.Xunit
 
             foreach (var recipe in salmon.Take(50).ToList())
             {
-                Trace.WriteLine(recipe.Title);
+                output.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
                 {
-                    Trace.WriteLine($"    Category: " + category);
+                    output.WriteLine($"    Category: " + category);
                 }
 
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions)
                 {
-                    Trace.WriteLine(directionLine);
+                    output.WriteLine(directionLine);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Recipe_LazyLoad()
         {
             var salmon = dc.Recipes
@@ -222,25 +228,25 @@ namespace Recipe.Xunit
 
             foreach (var recipe in salmon.ToList())
             {
-                Trace.WriteLine(recipe.Title);
+                output.WriteLine(recipe.Title);
                 foreach (var category in recipe.RecipeCategories)
                 {
-                    Trace.WriteLine($"    Category: " + category.Category.Description);
+                    output.WriteLine($"    Category: " + category.Category.Description);
                 }
 
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions)
                 {
-                    Trace.WriteLine(directionLine);
+                    output.WriteLine(directionLine.Description);
                 }
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void Recipe_WithoutNavigationProperties()
         {
             var salmon = from r in dc.Recipes
@@ -255,24 +261,24 @@ namespace Recipe.Xunit
 
             foreach (var recipe in salmon.ToList())
             {
-                Trace.WriteLine(recipe.Title);
+                output.WriteLine(recipe.Title);
                 foreach (var category in recipe.Categories)
                 {
-                    Trace.WriteLine($"    Category: " + category);
+                    output.WriteLine($"    Category: " + category);
                 }
 
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
                 }
 
                 foreach (var directionLine in recipe.Directions)
                 {
-                    Trace.WriteLine(directionLine);
+                    output.WriteLine(directionLine);
                 }
             }
         }
-        [TestMethod]
+        [Fact]
         public void FirstSingle()
         {
             var recipeId = dc.Recipes.First().Id;
@@ -284,12 +290,12 @@ namespace Recipe.Xunit
 
             var recipe5 = dc.Recipes.Where(r => r.Id == recipeId).First();
 
-            Trace.WriteLine("Fetch from cache");
+            output.WriteLine("Fetch from cache");
             var recipeCached = dc.Recipes.Find(recipeId);
-            Assert.IsNotNull(recipeCached);
-            Trace.WriteLine("Fetch from Local");
+            Assert.NotNull(recipeCached);
+            output.WriteLine("Fetch from Local");
             var cachedAgain = dc.Recipes.Local.FirstOrDefault(r => r.Id == recipeId);
-            Assert.IsNotNull(cachedAgain);
+            Assert.NotNull(cachedAgain);
         }
     }
 }
