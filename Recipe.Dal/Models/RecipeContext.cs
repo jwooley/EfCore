@@ -64,25 +64,34 @@ namespace Recipe.Dal.Models
                 entity.HasIndex(e => e.Title)
                     .HasDatabaseName("IX_Recipes_Title");
             });
+            modelBuilder.Entity<RecipeCategory>().ToTable("RecipeCategory");
+            modelBuilder.Entity<Recipe>()
+                .HasMany(r => r.Categories)
+                .WithMany(c => c.Recipes)
+                .UsingEntity<RecipeCategory>(
+                    join => join.HasOne(j => j.Category).WithMany().HasForeignKey(c => c.CategoryId),
+                    join => join.HasOne(j => j.Recipe).WithMany().HasForeignKey(r => r.RecipeId)
+                );
+
             //modelBuilder.Entity<Recipe>().HasQueryFilter(r => !r.IsDeleted);
 
-            modelBuilder.Entity<RecipeCategory>(entity =>
-            {
-                entity.HasKey(e => new { e.RecipeId, e.CategoryId })
-                    .HasName("PK_dbo.RecipeCategories");
+            //modelBuilder.Entity<RecipeCategory>(entity =>
+            //{
+            //    entity.HasKey(e => new { e.RecipeId, e.CategoryId })
+            //        .HasName("PK_dbo.RecipeCategories");
 
-                entity.HasIndex(e => e.CategoryId)
-                    .HasDatabaseName("IX_Category_CategoryId");
+            //    entity.HasIndex(e => e.CategoryId)
+            //        .HasDatabaseName("IX_Category_CategoryId");
 
-                entity.HasIndex(e => e.RecipeId)
-                    .HasDatabaseName("IX_Recipe_RecipeId");
-            });
+            //    entity.HasIndex(e => e.RecipeId)
+            //        .HasDatabaseName("IX_Recipe_RecipeId");
+            //});
         }
 
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Direction> Directions { get; set; }
         public virtual DbSet<Ingredient> Ingredients { get; set; }
         public virtual DbSet<Recipe> Recipes { get; set; }
-        public virtual DbSet<RecipeCategory> RecipeCategory { get; set; }
+        //public virtual DbSet<RecipeCategory> RecipeCategory { get; set; }
     }
 }

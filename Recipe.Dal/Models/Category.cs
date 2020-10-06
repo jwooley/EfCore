@@ -13,7 +13,6 @@ namespace Recipe.Dal.Models
         [MaxLength(50)]
         public string Description { get; set; }
 
-        [InverseProperty("Category")]
-        public virtual ICollection<RecipeCategory> RecipeCategories { get; set; } = new HashSet<RecipeCategory>();
+        public virtual ICollection<Recipe> Recipes { get; set; } = new HashSet<Recipe>();
     }
 }

@@ -17,11 +17,8 @@ namespace Recipe.Dal.Models
         [MaxLength(50)]
         public string ServingMeasure { get; set; }
 
-        [InverseProperty("Recipe")]
         public virtual ICollection<Direction> Directions { get; set; } = new HashSet<Direction>();
-        [InverseProperty("Recipe")]
         public virtual ICollection<Ingredient> Ingredients { get; set; } = new HashSet<Ingredient>();
-        [InverseProperty("Recipe")]
-        public virtual ICollection<RecipeCategory> RecipeCategories { get; set; } = new HashSet<RecipeCategory>();
+        public virtual ICollection<Category> Categories { get; set; } = new HashSet<Category>();
     }
 }

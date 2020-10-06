@@ -97,12 +97,12 @@ namespace Recipe.Xunit
                              select cat;
             foreach (var category in Appetizers)
             {
-                foreach (var recipe in category.RecipeCategories.Select(rc => rc.Recipe).Take(50))
+                foreach (var recipe in category.Recipes.Take(50))
                 {
                     output.WriteLine(recipe.Title);
-                    if (recipe.RecipeCategories.Count > 0)
+                    if (recipe.Categories.Count > 0)
                     {
-                        output.WriteLine($"    Category: " + recipe.RecipeCategories.First().Category.Description);
+                        output.WriteLine($"    Category: " + recipe.Categories.First().Description);
                     }
                     if (recipe.Ingredients.Count > 0)
                     {
@@ -126,7 +126,7 @@ namespace Recipe.Xunit
         public void Recipe_EagerLoading()
         {
             var salmon = from r in dc.Recipes
-                                .Include(rec => rec.RecipeCategories).ThenInclude(rc => rc.Category)
+                                .Include(rec => rec.Categories)
                                 .Include(rec => rec.Ingredients.OrderBy(i => i.SortOrder))
                                 .Include(rec => rec.Directions.OrderBy(d => d.LineNumber))
                            where r.Title.Contains("salmon")
@@ -135,7 +135,7 @@ namespace Recipe.Xunit
             foreach (var recipe in salmon.Take(50).ToList())
             {
                 output.WriteLine(recipe.Title);
-                output.WriteLine($"    Category: " + recipe.RecipeCategories.FirstOrDefault()?.Category?.Description);
+                output.WriteLine($"    Category: " + recipe.Categories.FirstOrDefault()?.Description);
 
                 foreach (var ingredient in recipe.Ingredients)
                 {
@@ -157,7 +157,7 @@ namespace Recipe.Xunit
                            select new
                            {
                                r.Title,
-                               Categories = r.RecipeCategories.Select(rc => rc.Category.Description).ToList(),
+                               Categories = r.Categories.Select(rc => rc.Description).ToList(),
                                Ingredients = r.Ingredients.OrderBy(i => i.SortOrder).ToList(),
                                Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
                            };
@@ -194,7 +194,7 @@ namespace Recipe.Xunit
                          select new
                          {
                              r.Title,
-                             Categories = r.RecipeCategories.Select(rc => rc.Category.Description).ToList(),
+                             Categories = r.Categories.Select(rc => rc.Description).ToList(),
                              Ingredients = r.Ingredients.OrderBy(i => i.SortOrder).ToList(),
                              Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
                          };
@@ -229,9 +229,9 @@ namespace Recipe.Xunit
             foreach (var recipe in salmon.ToList())
             {
                 output.WriteLine(recipe.Title);
-                foreach (var category in recipe.RecipeCategories)
+                foreach (var category in recipe.Categories)
                 {
-                    output.WriteLine($"    Category: " + category.Category.Description);
+                    output.WriteLine($"    Category: " + category.Description);
                 }
 
                 foreach (var ingredient in recipe.Ingredients)
@@ -254,7 +254,7 @@ namespace Recipe.Xunit
                            select new
                            {
                                r.Title,
-                               Categories = dc.RecipeCategory.Where(rc => rc.RecipeId == r.Id).Select(rc => rc.Category.Description).ToList(),
+                               Categories = r.Categories.Select(c => c.Description).ToList(),
                                Ingredients = dc.Ingredients.Where(i => i.RecipeId == r.Id).OrderBy(i => i.SortOrder).ToList(),
                                Directions = dc.Directions.Where(d => d.RecipeId == r.Id).OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
                            };
