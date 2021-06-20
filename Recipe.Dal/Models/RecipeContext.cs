@@ -18,6 +18,9 @@ namespace Recipe.Dal.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
              optionsBuilder
+                // Core 3 logging
+                //.UseLoggerFactory(ContextLoggerFactory)
+                // Dotnet 5 logging
                 // See https://erikej.github.io/efcore/2020/05/18/ef-core-simple-logging.html for details on LogTo
                 .LogTo(Console.WriteLine,
                     new[]
@@ -33,7 +36,6 @@ namespace Recipe.Dal.Models
                     options.MaxBatchSize(10);
                 })
                 //.EnableSensitiveDataLogging()
-                //.UseLoggerFactory(ContextLoggerFactory)
                 .UseLazyLoadingProxies();
         }
 
