@@ -9,7 +9,7 @@ namespace Recipe.Dal.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-            optionsBuilder.UseSqlServer(@"data source=.;initial catalog=recipecore;integrated security=true;",
+            optionsBuilder.UseSqlServer(@"data source=.,1401;initial catalog=recipecore;User Id=sa;Password=SuperSecretP@ssw0rd;multipleactiveresultsets=True;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
