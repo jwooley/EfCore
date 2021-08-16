@@ -17,11 +17,19 @@ namespace Recipe.Xunit
         }
         public override void WriteLine(string message)
         {
-            _output.WriteLine(message);
+            try
+            {
+                _output.WriteLine(message);
+            }
+            catch { }
         }
         public override void WriteLine(string format, params object[] args)
         {
-            _output.WriteLine(format, args);
+            try
+            {
+                _output.WriteLine(format, args);
+            }
+            catch { }
         }
     }
 }

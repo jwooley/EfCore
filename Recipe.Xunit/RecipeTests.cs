@@ -182,43 +182,6 @@ namespace Recipe.Xunit
             }
         }
 
-        /// <summary>
-        /// Using tolist for child collections reduces the queries issued and uses
-        /// similar behavior to include except it doesn't do select *
-        /// </summary>
-        [Fact]
-        public void Recipe_Projections21()
-        {
-            var salmon = from r in dc.Recipes
-                         where r.Title.Contains("salmon")
-                         select new
-                         {
-                             r.Title,
-                             Categories = r.Categories.Select(rc => rc.Description).ToList(),
-                             Ingredients = r.Ingredients.OrderBy(i => i.SortOrder).ToList(),
-                             Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
-                         };
-
-            foreach (var recipe in salmon.Take(50).ToList())
-            {
-                output.WriteLine(recipe.Title);
-                foreach (var category in recipe.Categories)
-                {
-                    output.WriteLine($"    Category: " + category);
-                }
-
-                foreach (var ingredient in recipe.Ingredients)
-                {
-                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
-                }
-
-                foreach (var directionLine in recipe.Directions)
-                {
-                    output.WriteLine(directionLine);
-                }
-            }
-        }
-
         [Fact]
         public void Recipe_LazyLoad()
         {
