@@ -6,7 +6,7 @@ namespace Recipe.Xunit
 {
     public class XUnitConsoleLogConverter : TextWriter
     {
-        ITestOutputHelper _output;
+        readonly ITestOutputHelper _output;
         public XUnitConsoleLogConverter(ITestOutputHelper output)
         {
             _output = output;
