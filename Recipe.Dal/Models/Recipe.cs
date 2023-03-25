@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Recipe.Dal.Models
 {
@@ -11,6 +12,7 @@ namespace Recipe.Dal.Models
         //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
         [MaxLength(1024)]
+        [Unicode(false)]
         public string Title { get; set; }
         [Column(TypeName = "decimal")]
         public decimal? ServingQuantity { get; set; }
