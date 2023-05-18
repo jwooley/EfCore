@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Recipe.Dal.Models;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -259,6 +261,30 @@ namespace Recipe.Xunit
             output.WriteLine("Fetch from Local");
             var cachedAgain = dc.Recipes.Local.FirstOrDefault(r => r.Id == recipeId);
             Assert.NotNull(cachedAgain);
+        }
+
+        [Fact]
+        public void RepositoryFailure()
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+            var r1 = RecipesEnumerable().Where(r => r.Title.Contains("Brownie")).FirstOrDefault();
+            sw.Stop();
+            output.WriteLine($"Enumerable: {sw.ElapsedMilliseconds}");
+            sw.Restart();
+            var r2 = RecipesQueryable().Where(r => r.Title.Contains("Brownie")).FirstOrDefault();
+            sw.Stop();
+            output.WriteLine($"Enumerable: {sw.ElapsedMilliseconds}");
+
+        }
+
+        public IEnumerable<Dal.Models.Recipe> RecipesEnumerable()
+        {
+            return dc.Recipes;
+        }
+        public IQueryable<Dal.Models.Recipe> RecipesQueryable()
+        {
+            return dc.Recipes;
         }
     }
 }
