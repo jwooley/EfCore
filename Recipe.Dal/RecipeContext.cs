@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,5 +46,19 @@ namespace Recipe.Dal.Models
                 .AsEnumerable()
                 .OrderBy(r => r.Title);
         }
+
+        public IEnumerable<Recipe> GetRecipesUncompiled(string searchCriteria)
+        {
+            return Recipes.Where(r =>
+                    r.Title.Contains(searchCriteria)
+                    || r.Ingredients.Any(i => i.Description.Contains(searchCriteria)));
+        }
+
+        public static readonly Func<RecipeContext, string, IEnumerable<Recipe>> GetRecipesCompiled = 
+            EF.CompileQuery((RecipeContext db, string searchCriteria) => 
+                db.Recipes.Where(r => 
+                    r.Title.Contains(searchCriteria)
+                    || r.Ingredients.Any(i => i.Description.Contains(searchCriteria))));
+
     }
 }

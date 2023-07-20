@@ -268,13 +268,13 @@ namespace Recipe.Xunit
         {
             var sw = new Stopwatch();
             sw.Start();
-            var r1 = RecipesEnumerable().Where(r => r.Title.Contains("Brownie")).FirstOrDefault();
+            var r1 = RecipesEnumerable().FirstOrDefault(r => r.Title.Contains("Brownie"));
             sw.Stop();
             output.WriteLine($"Enumerable: {sw.ElapsedMilliseconds}");
             sw.Restart();
             var r2 = RecipesQueryable().Where(r => r.Title.Contains("Brownie")).FirstOrDefault();
             sw.Stop();
-            output.WriteLine($"Enumerable: {sw.ElapsedMilliseconds}");
+            output.WriteLine($"Queryable: {sw.ElapsedMilliseconds}");
 
         }
 
