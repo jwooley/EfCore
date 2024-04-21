@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "Recipe.Dal.sln",
+    "projects": [
+      "Recipe.Dal\\Recipe.Dal.csproj",
+      "Recipe.Xunit\\Recipe.Xunit.csproj"
+    ]
+  }
+}
