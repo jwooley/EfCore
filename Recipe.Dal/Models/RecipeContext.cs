@@ -29,11 +29,11 @@ namespace Recipe.Dal.Models
                     },
                     LogLevel.Information,
                     DbContextLoggerOptions.SingleLine | DbContextLoggerOptions.UtcTime)
-                .UseSqlServer(@"data source=.,1401;initial catalog=recipecore;User Id=sa;Password=SuperSecretP@ssw0rd;multipleactiveresultsets=True;",
+                .UseSqlServer(@"data source=.,1401;initial catalog=recipecore;User Id=sa;Password=SuperSecretP@ssw0rd;multipleactiveresultsets=True;TrustServerCertificate=True;",
                 options =>
                 {
                     options.EnableRetryOnFailure(maxRetryCount: 3);
-                    options.MaxBatchSize(10);
+                    options.MaxBatchSize(30);
                 })
                 //.EnableSensitiveDataLogging()
                 .UseLazyLoadingProxies();

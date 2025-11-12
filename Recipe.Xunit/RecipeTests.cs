@@ -1,13 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Recipe.Dal.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Recipe.Xunit
 {
@@ -268,13 +266,13 @@ namespace Recipe.Xunit
         {
             var sw = new Stopwatch();
             sw.Start();
-            var r1 = RecipesEnumerable().Where(r => r.Title.Contains("Brownie")).FirstOrDefault();
+            var r1 = RecipesEnumerable().FirstOrDefault(r => r.Title.Contains("Brownie"));
             sw.Stop();
             output.WriteLine($"Enumerable: {sw.ElapsedMilliseconds}");
             sw.Restart();
             var r2 = RecipesQueryable().Where(r => r.Title.Contains("Brownie")).FirstOrDefault();
             sw.Stop();
-            output.WriteLine($"Enumerable: {sw.ElapsedMilliseconds}");
+            output.WriteLine($"Queryable: {sw.ElapsedMilliseconds}");
 
         }
 
@@ -285,6 +283,69 @@ namespace Recipe.Xunit
         public IQueryable<Dal.Models.Recipe> RecipesQueryable()
         {
             return dc.Recipes;
+        }
+
+        [Fact]
+        public void Ef2_TagWith()
+        {
+            var brownies = from recipe in dc.Recipes.TagWith("Testing Tag With")
+                           where EF.Functions.Like(recipe.Title, "%brownie%")
+                           select recipe.Title;
+            foreach (var recipe in brownies)
+            {
+                output.WriteLine(recipe);
+            }
+
+        }
+        [Fact]
+        public void Ef2_Functions_Like()
+        {
+            var brownie = "%brownie%";
+
+            var brownies = from recipe in dc.Recipes
+                           where EF.Functions.Like(recipe.Title, brownie)
+                           select recipe.Title;
+            foreach (var recipe in brownies)
+            {
+                output.WriteLine(recipe);
+            }
+        }
+
+        [Fact]
+        public void Ef2_View()
+        {
+            var search = "%brownie%";
+            var brownies = dc.Set<Recipe.Dal.Models.Recipe>()
+               .FromSqlInterpolated($"Select * from Recipe where Title like {search}");
+            Assert.True(brownies.Any());
+        }
+
+        [Fact]
+        public void FromSqlInterpolated()
+        {
+            var search = "%brownie%";
+
+            var brownies = dc.Set<Recipe.Dal.Models.Recipe>()
+               .FromSqlInterpolated($"Select * from Recipe where Title like {search}");
+            Assert.True(brownies.Any());
+        }
+
+        [Fact]
+        public void FromSqlRaw()
+        {
+            var search = "%brownie%";
+            string query = $"Select * from Recipe where Title like '{search}'";
+            var brownies = dc.Set<Recipe.Dal.Models.Recipe>()
+               .FromSqlRaw(query);
+            Assert.True(brownies.Any());
+        }
+
+        [Fact]
+        public void EfVarcharTest()
+        {
+            var query = dc.Recipes.Where(r => r.Title.Contains("brownie"));
+            var brownie = query.FirstOrDefault();
+            Assert.NotNull(brownie);
         }
     }
 }
