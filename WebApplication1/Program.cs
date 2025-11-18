@@ -4,6 +4,7 @@ using Recipe.Dal.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddValidation();
 builder.Services.AddControllersWithViews();
 
 const string ConnectionString = "data source=.;initial catalog=recipecore;integrated security=true;TrustServerCertificate=true;";

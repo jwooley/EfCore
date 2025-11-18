@@ -347,5 +347,155 @@ namespace Recipe.Xunit
             var brownie = query.FirstOrDefault();
             Assert.NotNull(brownie);
         }
+
+
+        [Fact]
+        public void Recipe_ContainsList()
+        {
+            string[] targetCategories = { "Cheese/eggs", "Chocolate", "Children" };
+            var recipes = (from recipe in dc.Recipes
+                           from category in recipe.Categories
+                           where targetCategories.Contains(category.Description)
+                           select recipe).ToList();
+
+            Assert.True(recipes.Any());
+        }
+
+        [Fact]
+        public void Recipe_AsSplitQuery()
+        {
+            var salmon = from r in dc.Recipes
+                         where r.Title.Contains("salmon")
+                         select new
+                         {
+                             r.Title,
+                             Categories = r.Categories.Select(rc => rc.Description).ToList(),
+                             Ingredients = r.Ingredients.OrderBy(i => i.SortOrder).ToList(),
+                             Directions = r.Directions.OrderBy(d => d.LineNumber).Select(d => d.Description).ToList()
+                         };
+
+            foreach (var recipe in salmon.Take(50).AsSplitQuery().ToList())
+            {
+                output.WriteLine(recipe.Title);
+                foreach (var category in recipe.Categories)
+                {
+                    output.WriteLine($"    Category: " + category);
+                }
+
+                foreach (var ingredient in recipe.Ingredients)
+                {
+                    output.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                }
+
+                foreach (var directionLine in recipe.Directions)
+                {
+                    output.WriteLine(directionLine);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Recipe_AsyncLoad()
+        {
+            var brownies = await GetRecipesAsync();
+
+            foreach (var recipe in brownies)
+            {
+                Trace.WriteLine(recipe.Title);
+                Trace.Write($"    Category: " + recipe.Category);
+
+                foreach (var ingredient in recipe.Ingredients)
+                {
+                    Trace.WriteLine($"{ingredient.Units} {ingredient.UnitType}: {ingredient.Description}");
+                }
+
+                foreach (var directionLine in recipe.Directions)
+                {
+                    Trace.WriteLine(directionLine);
+                }
+            }
+        }
+
+        public async Task<IEnumerable<RecipeDto>> GetRecipesAsync()
+        {
+            var brownies = await (from r in dc.Recipes
+                                  where r.Title.Contains("Brownie")
+                                  select new RecipeDto { Title = r.Title, Id = r.Id })
+                           .ToListAsync();
+
+            await Task.WhenAll(SetIngredientsAsync(brownies), SetDirectionsAsync(brownies));
+
+            return brownies;
+        }
+        public async Task SetIngredientsAsync(IEnumerable<RecipeDto> recipes)
+        {
+            using (var dc1 = RecipeContext.RecipeContextFactory())
+            {
+                var ingredients = await (from r in dc.Recipes
+                                         where r.Title.Contains("Brownie")
+                                         from i in r.Ingredients
+                                         orderby i.SortOrder
+                                         select i).ToListAsync();
+
+                foreach (var i in ingredients)
+                {
+                    var recipe = recipes.First(r => r.Id == i.RecipeId);
+                    recipe.Ingredients.Add(i);
+                }
+            }
+        }
+        public async Task SetDirectionsAsync(IEnumerable<RecipeDto> recipes)
+        {
+            using (var dc1 = RecipeContext.RecipeContextFactory())
+            {
+                var directions = await (from r in dc1.Recipes
+                                        where r.Title.Contains("Brownie")
+                                        from d in r.Directions
+                                        orderby d.LineNumber
+                                        select d).ToListAsync();
+                foreach (var d in directions)
+                {
+                    var recipe = recipes.First(r => r.Id == d.RecipeId);
+                    recipe.Directions.Add(d.Description);
+                }
+            }
+        }
+
+        private IQueryable<Dal.Models.Recipe> GetConditional(RecipeConditions conditions)
+        {
+            IQueryable<Dal.Models.Recipe> recipes = dc.Recipes;
+
+            if (conditions.Servings > 0)
+            {
+                recipes = recipes.Where(r => r.ServingQuantity == conditions.Servings);
+            }
+
+            if (!String.IsNullOrEmpty(conditions.IngredientName))
+            {
+                recipes = recipes.Where(r => r.Ingredients.Any(i => i.Description.Contains(conditions.IngredientName)));
+            }
+
+            if (!String.IsNullOrEmpty(conditions.Category))
+            {
+                recipes = recipes.Where(r => r.Categories.Any(c => c.Description == conditions.Category));
+            }
+
+            if (!string.IsNullOrEmpty(conditions.Title))
+            {
+                recipes = recipes.Where(r => r.Title.Contains(conditions.Title));
+            }
+
+            return recipes;
+        }
+
+        [Fact]
+        public void Recipe_ConditionalSearchByTitleCategory()
+        {
+            var conditions = new RecipeConditions { Title = "Dip", Category = "Appetizers" };
+            var recipes = GetConditional(conditions)
+                .Take(10);
+            Assert.Equal(10, recipes.Count());
+        }
+
     }
 }

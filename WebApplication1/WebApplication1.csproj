@@ -8,6 +8,9 @@
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Validation" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Recipe.Dal\Recipe.Dal.csproj" />
   </ItemGroup>
 

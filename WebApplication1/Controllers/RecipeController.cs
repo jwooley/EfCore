@@ -3,6 +3,7 @@ using Recipe.Dal.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
@@ -21,6 +22,29 @@ namespace WebApplication1.Controllers
         public IQueryable<Recipe.Dal.Models.Recipe> GetRecipes()
         {
             return _Context.Recipes.Take(50);
+        }
+
+        [HttpGet]
+        [Route("api/Recipe/Get/{id}")]
+        public ActionResult<Recipe.Dal.Models.Recipe?> GetRecipe(long id)
+        {
+            return _Context.Recipes.Find(id);
+        }
+
+        [HttpPost]
+        [Route("api/Recipe")]
+        public ActionResult UpsertRecipe(Recipe.Dal.Models.Recipe recipe)
+        {
+            if (recipe.Id == 0)
+            {
+                _Context.Recipes.Add(recipe);
+                return Created($"api/Recipe/Get/{recipe.Id}", recipe);
+            }
+            else
+            {
+                _Context.Recipes.Update(recipe);
+                return Ok(recipe.Id);
+            }
         }
     }
 }
